@@ -1,3 +1,4 @@
+
 package com.nexatrade.ai
 
 import android.os.Bundle
@@ -16,9 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val Dark = Color(0xFF080B10)
-private val CardDark = Color(0xFF151B24)
 private val Gold = Color(0xFFFFC857)
-private val Green = Color(0xFF20D68A)
+private val Green = Color(0xFF19C37D)
 private val Red = Color(0xFFFF5555)
 private val White = Color(0xFFF5F5F5)
 private val Grey = Color(0xFF9299A5)
@@ -44,79 +44,76 @@ fun NexaDashboard() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp)
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(Modifier.height(20.dp))
+
             Text(
                 "NEXA TRADE AI",
                 color = Gold,
-                fontSize = 25.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
                 "SMART MARKET ANALYSIS",
                 color = Grey,
-                fontSize = 11.sp
-            )
-
-            Spacer(Modifier.height(28.dp))
-
-            Text(
-                "SELECT MARKET",
-                color = Grey,
                 fontSize = 12.sp
             )
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(30.dp))
+
+            Text("SELECT MARKET", color = Grey)
+
+            Spacer(Modifier.height(12.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                MarketButton("OTC", market == "OTC") { market = "OTC" }
-                MarketButton("LIVE", market == "LIVE") { market = "LIVE" }
+                Button(onClick = { market = "OTC" }) {
+                    Text("OTC")
+                }
+
+                Button(onClick = { market = "LIVE" }) {
+                    Text("LIVE")
+                }
             }
 
             Spacer(Modifier.height(25.dp))
 
             Card(
+                modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = CardDark
+                    containerColor = Color(0xFF151B24)
                 ),
-                shape = RoundedCornerShape(18.dp),
-                modifier = Modifier.fillMaxWidth()
+                shape = RoundedCornerShape(20.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        "AI SIGNAL",
-                        color = Grey,
-                        fontSize = 13.sp
-                    )
+                    Text("CURRENT SIGNAL", color = Grey)
 
                     Spacer(Modifier.height(15.dp))
 
                     Text(
                         signal,
-                        color = Gold,
-                        fontSize = 38.sp,
-                        fontWeight = FontWeight.ExtraBold
+                        color = when (signal) {
+                            "BUY" -> Green
+                            "SELL" -> Red
+                            else -> Gold
+                        },
+                        fontSize = 42.sp,
+                        fontWeight = FontWeight.Bold
                     )
 
-                    Text(
-                        "1 MINUTE TIMEFRAME",
-                        color = Grey,
-                        fontSize = 11.sp
-                    )
+                    Text("1 MINUTE TIMEFRAME", color = Grey)
 
-                    Spacer(Modifier.height(20.dp))
+                    Spacer(Modifier.height(15.dp))
 
-                    Button(
-                        onClick = { signal = "WAIT" },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Gold
-                        )
-                    ) {
-                        Text("RESET SIGNAL", color = Dark)
+                    Button(onClick = { signal = "WAIT" }) {
+                        Text("RESET")
                     }
                 }
             }
@@ -126,29 +123,54 @@ fun NexaDashboard() {
             Text(
                 "MARKET ANALYSIS",
                 color = Gold,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
             )
+
+            Spacer(Modifier.height(15.dp))
+
+            AnalysisRow("Market", market)
+            AnalysisRow("Timeframe", "1 Minute")
+            AnalysisRow("Trend", "Not analyzed")
+            AnalysisRow("Support", "Not detected")
+            AnalysisRow("Resistance", "Not detected")
+
+            Spacer(Modifier.height(25.dp))
+
+            Text("MANUAL SIGNAL", color = Grey)
 
             Spacer(Modifier.height(12.dp))
 
-            InfoCard("Market", market)
-            InfoCard("Timeframe", "1 Minute")
-            InfoCard("Trend", "Not analyzed")
-            InfoCard("Support / Resistance", "Not detected")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = { signal = "BUY" },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Green
+                    )
+                ) {
+                    Text("BUY")
+                }
 
-            Spacer(Modifier.height(20.dp))
+                Button(
+                    onClick = { signal = "SELL" },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Red
+                    )
+                ) {
+                    Text("SELL")
+                }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                SignalButton("BUY", Green) { signal = "BUY" }
-                SignalButton("SELL", Red) { signal = "SELL" }
-                SignalButton("WAIT", Gold) { signal = "WAIT" }
+                Button(
+                    onClick = { signal = "WAIT" }
+                ) {
+                    Text("WAIT")
+                }
             }
 
             Spacer(Modifier.weight(1f))
 
             Text(
-                "Educational analysis only • No guaranteed profits",
+                "Educational demo only. No guaranteed profits.",
                 color = Grey,
                 fontSize = 10.sp
             )
@@ -157,62 +179,18 @@ fun NexaDashboard() {
 }
 
 @Composable
-fun MarketButton(
-    name: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (selected) Gold else CardDark
-        ),
-        modifier = Modifier.weight(1f)
-    ) {
-        Text(
-            name,
-            color = if (selected) Dark else White
-        )
-    }
-}
-
-@Composable
-fun InfoCard(title: String, value: String) {
-    Card(
+fun AnalysisRow(title: String, value: String) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 9.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = CardDark
-        ),
-        shape = RoundedCornerShape(12.dp)
+            .padding(vertical = 7.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(title, color = Grey, fontSize = 12.sp)
-            Text(value, color = White, fontSize = 12.sp)
-        }
-    }
-}
-
-@Composable
-fun RowScope.SignalButton(
-    name: String,
-    color: Color,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier.weight(1f),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = color
-        ),
-        contentPadding = PaddingValues(horizontal = 4.dp)
-    ) {
-        Text(name, color = Dark, fontSize = 11.sp)
+        Text(title, color = Grey)
+        Text(
+            value,
+            color = White,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
